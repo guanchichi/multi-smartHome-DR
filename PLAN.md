@@ -231,6 +231,16 @@ for t in timeline:                      # 外層
 ## 目前進度
 - **Phase 1 已定案完成**：真實資料跑通，PARAMS 經診斷定案（WM merge_gap=1 / max_len=22，其餘維持），H5 ch2 移出 deferrable。`out/` 為正式輸出。
 - **Phase 2 已定案完成**：全 17 戶 local LSTM 訓練通過，無任何戶觸發斷言或破 15% 停損線。結果存於 `out_phase2_17h/`（config.json、results.json 入版控）。管線參數與評估指標定案詳見 Phase 2 定案節。
-- **下一步：Phase 3** — 因果模擬器（`observe(t)` 只回傳 ≤ t 資料，baseload 用 LSTM 預測值，job 在實際 `r_j` 釋放，不可偷看未來）。
-- Phase 4–6 尚未開始。
+- **Phase 3a 已完成**：`phase3_simulator.py` 骨架 + 第一層因果鎖。`observe(t)` 與 `get_job()` 均已驗證：三個測試情境（正常存取 / 偷看未來 baseload / 未釋放 job）全部實際 raise，非靜默返回空值。
+- **Phase 3b 已完成**：Phase 2 LSTM 接入 `forecast(t)`，第二層因果鎖上線。
+  - Lock 2a：`forecast(t)` 若 t > current_t → raise CausalViolationError。
+  - Lock 2b：`_assert_no_future()` 在組裝 LSTM 輸入前檢查切片，含任何 index > t 立即 raise。
+  - Scaler 從 results.json 讀取（不重新 fit）。Gap 處理與 Phase 2 完全一致（handle_gaps，forward-only）。
+  - 反作弊測試通過：forecast 結果 ≠ 真實未來值（t_valid=2015-03-25 18:00，H20）。
+  - **全 17 戶 gap 診斷完成（`diag_phase3b_gaps17.py`）**：
+    - test 段 None% 平均 27.7%（範圍 11.9–36.0%），val 段平均 2.7%；呈系統性「資料尾聲品質下降」型態（REFIT 2015 末期傳感器掉訊），非演算法 bug。
+    - 全 17 戶 test 段最長乾淨連續窗均 ≥ 19 天（平均 32.3d，H8 最佳 61.4d），全部有 ≥2 段 ≥7 天乾淨窗。
+    - Phase 4 可行性確認：coordinator 可在乾淨連續窗內執行；`forecast()` 回 None 時需 fallback（延用最近有效預測或跳過協調輪）。
+- **下一步：Phase 4** — 協調層（shadow-price online rolling-horizon），在乾淨連續窗內執行，對 `forecast()=None` 需有 fallback 策略。
+- Phase 5–6 尚未開始。
 - **git 待清理備忘**：`model_house*.pt` 與過程目錄 `out_phase2/`、`out_phase2_baseline/`、`out_phase2_lr5e4/` 被誤 commit 並 push。處理方式：`.gitignore` 已補規則 → 執行 `git rm --cached` 移出追蹤 → 新增 commit（不要 reset 或改寫歷史）。`out_phase2_17h/config.json` 與 `results.json` 保留在版控。

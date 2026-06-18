@@ -1,46 +1,54 @@
-# ── 原始資料 (大檔,不入版控) ────────────────────────────────
+# Raw data (large files, not versioned)
 data/
 
-# ── 產出目錄 ────────────────────────────────────────────────
+# Phase 1 outputs
 out/
 out_new/
 out_diag/
 
-# ── 圖片 ─────────────────────────────────────────────────────
+# Phase 2 pilot/experiment output dirs (keep on disk, not in git)
+out_phase2/
+out_phase2_baseline/
+out_phase2_lr5e4/
+
+# PyTorch model weights (all locations)
+*.pt
+
+# Plots
 *.png
 *.jpg
 *.jpeg
 
-# ── Python ───────────────────────────────────────────────────
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 .Python
 
-# ── 虛擬環境 ─────────────────────────────────────────────────
+# Virtual environments
 .venv/
 venv/
 env/
 .env
 
-# ── Jupyter ──────────────────────────────────────────────────
+# Jupyter
 .ipynb_checkpoints/
 *.ipynb
 
-# ── 套件建置 ─────────────────────────────────────────────────
+# Build artifacts
 *.egg-info/
 dist/
 build/
 
-# ── OS ───────────────────────────────────────────────────────
+# OS files
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# ── IDE ──────────────────────────────────────────────────────
+# IDE
 .vscode/
 .idea/
 
-# ── 舊的無點 gitignore(可刪) ─────────────────────────────────
+# Old unformatted gitignore (safe to delete)
 gitignore
