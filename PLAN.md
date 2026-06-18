@@ -167,7 +167,22 @@ H2、H8、H10、H17 的 test RMSE_scaled ≥ 0.89σ，其中 H2（1.10σ）與 H
 - 拒絕處理:被拒 job 釘成 must-run,下個 tick 重排;無真人 → acceptance model `p(accept | 延後時數, 省的錢)`。
 
 ## Phase 4 — 協調層 + baselines
-主方法 online shadow-price loop(雙層:外層 rolling horizon,內層協調):
+
+### Must-run 規則（Phase 4a 定案）
+
+當一個已釋放 job 在 `schedule_house` 中找不到合法啟動 slot（`s_min > s_max`），轉為 **must-run**：
+
+| 條件 | 啟動點 | `deadline_missed` |
+|---|---|---|
+| `d_j − dur ≥ t` | `start = d_j_slot − duration`（最晚仍能趕上 deadline 的點） | `False` |
+| `d_j − dur < t` | `start = 0`（立刻從 t 起跑） | `True` |
+
+- Must-run job **non-interruptible**，整段連續執行，不參與協調最佳化。
+- Must-run 的 `power_profile` **必須計入聚合負載**（`compute_aggregate_load`），coordinator 和其他排程要把它當成固定背景負載繞著它排。Must-run 不可從負載帳中消失。
+- 驗證規則：must-run job 仍驗 ① non-interruptible、② release（start ≥ 0）；豁免 ③ deadline 與 ④ horizon 約束（改記錄 `deadline_missed`）。
+- `deadline_missed` 計入 Phase 5 指標：**deadline-miss rate** = must-run 中 `deadline_missed=True` 的比例。
+
+主方法 online shadow-price loop（雙層：外層 rolling horizon，內層協調）:
 
 ```
 λ_warm = 0
@@ -189,6 +204,35 @@ for t in timeline:                      # 外層
 關鍵技巧:**λ warm-start**(相鄰 tick 擁塞模式相近,幾次迭代即收斂)、**commit-first / MPC**(每 tick 只執行當下格)、**terminal cost**(防 horizon myopia)、**target = horizon 內 aggregate running mean**(load leveling)。
 
 對照組:`No-DR` / `Greedy 純價格(故意製造 herding)` / `Day-ahead 一次性 MILP(近 oracle 上界)`。
+
+### Phase 4d — 擴展評估（17 戶 × 最長乾淨窗，指標定案）
+
+**動機**：Phase 4c 以 3 戶 2 天驗通機制，但整窗 PAR 受低載稀釋（-17% 而非單點 -32%）；需更大規模才能體現協調價值。
+
+**評估規模**：
+- 全 **17 戶**（排除 H11/21/12）。
+- 每戶使用 **各自最長乾淨連續窗**（Phase 3 已算，全戶 ≥ 19 天，平均 32.3 天）。
+
+**PAR 指標定案（雙報）**：
+1. **整窗 PAR**（保守）：max(load_per_tick) / mean(load_per_tick)，含所有無 job 低載格。
+2. **每日尖峰降幅**（主打）：各日最大 5 分鐘均值 peak → coord vs greedy 的百分比降幅，反映削峰本質，不被低載稀釋。
+
+**完整 baselines**：
+- **No-DR**：所有 job 在 r_j 立刻啟動（理論最差）。
+- **Greedy**：base ToU price，rolling commit-first（Phase 4c greedy）。
+- **Online-coordinated**：shadow-price best-so-far，rolling，warm-start=best_lam（本方法）。
+- **Oracle MILP**（單點參考，不做全窗）：每日抽樣 1–2 個 tick 跑 oracle，估計協調效率上界。
+
+**其他指標**：
+- 協調效率 = (greedy−coord)/(greedy−oracle) × 100%（抽樣 tick）。
+- 平均延後時數 = mean(commit_time − r_j)（分鐘）。
+- deadline-miss rate = committed 中 deadline_missed=True 的比例。
+- 每 tick 平均協調 iter 數與 wall-clock runtime（佐證即時可行性，目標 < 1 s/tick）。
+
+**輸出格式**：
+- 每戶一欄的指標總表（整窗 PAR / 每日尖峰降幅 / 協調效率 / deadline-miss rate）。
+- 跨戶 box-plot 或 summary（median / IQR / outliers）。
+- 代表戶（H3/H8/H20）的逐 tick 負載曲線（coord vs greedy）。
 
 ## Phase 5 — 實驗矩陣與指標
 
@@ -241,6 +285,49 @@ for t in timeline:                      # 外層
     - test 段 None% 平均 27.7%（範圍 11.9–36.0%），val 段平均 2.7%；呈系統性「資料尾聲品質下降」型態（REFIT 2015 末期傳感器掉訊），非演算法 bug。
     - 全 17 戶 test 段最長乾淨連續窗均 ≥ 19 天（平均 32.3d，H8 最佳 61.4d），全部有 ≥2 段 ≥7 天乾淨窗。
     - Phase 4 可行性確認：coordinator 可在乾淨連續窗內執行；`forecast()` 回 None 時需 fallback（延用最近有效預測或跳過協調輪）。
-- **下一步：Phase 4** — 協調層（shadow-price online rolling-horizon），在乾淨連續窗內執行，對 `forecast()=None` 需有 fallback 策略。
-- Phase 5–6 尚未開始。
+- **Phase 4a 已完成（含 must-run 規則）**：`phase4a_schedule.py`，單戶 deferrable 排程子問題 + must-run 分類 + 負載計入驗證。
+  - `schedule_house()`：infeasible job 不再靜默丟棄，轉為 `MustRunJob`，含 `deadline_missed` 旗與計算啟動點。
+  - `assert_schedule_valid()` / `assert_must_run_valid()`：scheduled ①②③④；must-run ①②，③④ 豁免。
+  - `compute_aggregate_load(include_must_run=True/False)`：可開/關 must-run 項的計入，用於 coordinator 做負載對比。
+  - 驗證結果（H20, t=2015-03-27 20:00 UTC，HARD RULE 全 OK）：
+    - **TEST A**：job 310（WM, d_slot=2, dur=8, d_slot-dur=-6<0）→ must-run start=0, deadline_missed=True ✓
+    - **TEST B**：SYN-TIGHT（dur=6, d_slot=8, horizon=4）→ horizon 短於 dur 強制 infeasible，但 d_slot-dur=2≥0 → must-run start=2, deadline_missed=False ✓
+    - **TEST C**：負載帳目驗證 — diff 在 slots 0–7 精確等於 326.4 W，slot 8+ 為 0.0 ✓
+    - **TEST E**：故意給 must-run 錯誤 end_slot → ① violation raise ✓
+- **Phase 4b 已完成（含收斂修正與 oracle 定位）**：`phase4b_coordinator.py`，3 戶 shadow-price 協調（H3/H8/H20），單 horizon，乾淨窗 t=2015-04-10 10:00 UTC。
+  - `tick_all_houses()`：各戶用同一 λ 解 schedule_house，coordinator 只收 Σ load（隱私邊界）。
+  - `run_coordination()`：subgradient λ 更新，衰減步長 α₀/√(k+1)，target = mean(greedy L)（固定，能量守恆）。
+    - **best-so-far 追蹤**（非單調 subgradient 必要）：回傳 best_L / best_results / best_lam，不回 last。
+    - best_lam 為 Phase 4c rolling warm-start 的種子（必須用 best_lam，不可用 last λ）。
+  - `oracle_milp()`：PuLP (CBC) + scipy fallback，min max(L) MILP，同 t/jobs/horizon。
+  - **三方 PAR 對照（4 active jobs，全 s_min=0 → greedy herding）**：
+    | 方法 | PAR | peak W | Δ vs greedy |
+    |---|---|---|---|
+    | Greedy (herding) | 2.392 | 4326 | — |
+    | Online coord (best-so-far) | **1.628** | 2944 | −32.0% |
+    | Oracle MILP (day-ahead OPT) | **1.344** | 2430 | −43.8% |
+    - **協調效率 = (2.392−1.628)/(2.392−1.344)×100% = 72.9%**（離散 subgradient 已捕捉 ~73% 的可用削峰空間）
+    - Oracle 最佳排程：H3-WM→13、H8-DR→0、H20-WM→18、H20-TD→4（shadow-price 找到 H20-TD→20，與最優的 →4 有 16 slot 落差）
+  - Red-flag 驗證：31 次迭代 PAR > greedy（最高 2.420），best_par 全程不採壞解（is_best=True@bad = 0）。
+  - Mean conservation：greedy 與 coord diff = 0.000W。
+  - 振盪診斷：離散問題的對偶間隙——best PAR 在 iter 38 定案後不再改善；屬結構性而非演算法 bug。
+  - HARD RULE 全 OK。
+- **Phase 4c 已完成（rolling horizon + commit-first + warm-start）**：`phase4c_rolling.py`。
+  - 外層逐 tick（Δ=10 min）推進；每 tick 呼叫 `sim.observe(t)` + `sim.forecast(t)`，跑內層 shadow-price 協調（50 iter），取 best_lam 為下 tick warm-start。
+  - **commit-first**：僅 `start_slot=0` 的 scheduled / must-run job 被鎖定，後續 tick 不可撤銷（`_build_hd_list` filter 結構保證）。
+  - **None fallback**：`forecast=None` 時將最近有效預測左移 1 slot 延用，標記 fallback tick。
+  - 已 commit 的 running job 加回各戶 forecast（`_running_bg` background correction），協調時正確計入背景負載。
+  - **驗證結果（2 天 × H3/H8/H20，t=2015-04-10 10:00 UTC，288 ticks）**：
+    | 方法 | 整窗 PAR | peak W | fallback ticks | 耗時 |
+    |---|---|---|---|---|
+    | Greedy (rolling) | 3.563 | — | 0 | — |
+    | Coordinated (rolling) | **2.949** | — | 0 | 5.8 s |
+    - 整窗 PAR 降幅 −17.2%（3.563→2.949）。
+    - warm-start 驗證：tick k 的 `lam_init = best_lam[k-1]`，PASS（浮點精確）。
+    - commit 不可撤：dict filter 結構保證，no duplicate job_id，PASS。
+    - 耗時 5.8 s / 288 ticks = 0.02 s/tick → **即時可行佐證**。
+  - **已知侷限**：整窗 PAR 被「無 active job 低載時段」稀釋（單點 −32% 被攤成 −17.2%）；3 戶 2 天 job 太稀疏，需放大到 17 戶全窗才能體現協調價值。
+  - HARD RULE 全 OK。
+- **Phase 5–6 尚未開始。**
+- **下一步：Phase 4d** — 擴展評估規模與指標定案（見下方 Phase 4d 節）。
 - **git 待清理備忘**：`model_house*.pt` 與過程目錄 `out_phase2/`、`out_phase2_baseline/`、`out_phase2_lr5e4/` 被誤 commit 並 push。處理方式：`.gitignore` 已補規則 → 執行 `git rm --cached` 移出追蹤 → 新增 commit（不要 reset 或改寫歷史）。`out_phase2_17h/config.json` 與 `results.json` 保留在版控。
