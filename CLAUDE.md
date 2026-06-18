@@ -23,5 +23,14 @@
 - env:numpy<2.0 / torch 2.3.x。改動相依套件前先問。
 
 ## 進度
-- **Phase 1**(`phase1_cycles.py`)已完成並驗證(self-test 注入數=抽出數)。
-- **下一步**:真實 CLEAN 資料跑 Phase 1 → 看 `summary_by_type.csv` 回調 `PARAMS` → 進 Phase 2 每戶 local LSTM。
+- **Phase 1 (`phase1_cycles.py`) 已定案完成**。
+  - 真實 REFIT CLEAN 資料跑通並驗證，**`out/` 為正式輸出**（11,844 cycles，17 戶）。
+  - PARAMS 已按真實分布診斷定案（見 PLAN.md Phase 1 章節）：WM merge_gap 2→1、max_len 18→22；TD / DW / WD / DR 維持原值。
+  - H5 ch2（原標 TD）確認為除濕機，已自 `DEFERRABLE_MAP` 移除；`CONTAMINATION (5,2)` 一併刪除；H5 只剩 WM(ch3) + DW(ch4)。
+  - 診斷輔助腳本（非生產）：`compare_wm_params.py`、`verify_phase1_final.py`、`diag_raw_power.py`。
+- **下一步：Phase 2** — 每戶 local LSTM，只預測 baseload。
+  - chronological split 70/10/20，**絕不 shuffle**。
+  - 指標：RMSE / MAE / MAPE（不用 R²）。
+  - 程式保留 FedAvg-ready 介面。
+  - 建議檔名：`phase2_lstm.py`。
+  - 注意：H5 baseload 現在包含除濕機功率（ch2 不再從 Aggregate 扣除），評估時 H5 可能偏高，必要時單獨報告。
