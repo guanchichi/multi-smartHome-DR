@@ -234,6 +234,66 @@ for t in timeline:                      # 外層
 - 跨戶 box-plot 或 summary（median / IQR / outliers）。
 - 代表戶（H3/H8/H20）的逐 tick 負載曲線（coord vs greedy）。
 
+### Phase 4d 定案（17 戶 × 18 天社區，SCHED_REF bug 已修正）
+
+**Bug 修正紀錄**
+原始 `phase4d_eval.py` 的 `run_rolling()` 中，`schedule_house` / `run_coordination` 誤用
+for 迴圈最後一戶（H20）的 `t_real` 作為所有戶的共同時間基準。
+不同 `win_start` 的戶（H3=Jan、H8=Jan、H7=Jun、H10=May）因此出現虛假的「已超時」或
+「未來 job」，造成 deadline-miss 率虛報至 31.9%，Greedy 與 Coord PAR 一致。
+**修正方式**：引入 `SCHED_REF = 2000-01-01 UTC` 作為共同基準；每戶 active jobs 在進入
+`schedule_house` 前以 `_normalize_for_sched()` 平移至 SCHED_REF 框架；LSTM forecast 仍
+用各戶真實 `t_real`（因果性不受影響）。
+
+**日期分類（日峰時刻 Job% 標準，診斷 2 結論）**
+- 可協調日（Job% ≥ 10%）：Day [3, 7, 11, 14, 16]（5 天）
+- 背景主導日（Job% < 10%）：其餘 13 天
+
+**整窗 PAR（保守指標）**
+
+| 方法 | PAR |
+|---|---|
+| No-DR | 2.8534 |
+| Greedy | 2.8700 |
+| Online-Coord | 2.8370 |
+
+★ 整窗最高峰落在背景主導日（deferrable job W 佔比 < 10%），協調本來就削不動。
+整窗 PAR 為保守下界；以「每日尖峰降幅」為主打指標。
+
+**每日尖峰降幅（%，vs No-DR）— 主打指標**
+
+| 分組 | n 天 | Greedy | Coord |
+|---|---|---|---|
+| 全 18 天 | 18 | +0.40% | +4.92% |
+| 可協調日 | 5 | 0.00% | +10.72%±1.90% |
+| 背景主導日 | 13 | — | +2.69% |
+
+**協調效率 = (Greedy峰−Coord峰)/(Greedy峰−Oracle峰)×100%**
+
+| 分組 | mean±std |
+|---|---|
+| 全 18 天 | 74.6% |
+| 可協調日（5 天） | 88.8% |
+
+**Job 層級指標**
+
+| 指標 | 值 |
+|---|---|
+| Committed jobs | — |
+| Deadline-miss rate | 3.6% |
+| Avg delay | 2.47 h |
+| Runtime | 0.093 s/tick |
+| Fallback ticks | 0 |
+
+**已知侷限**
+- Day 9 coord 降幅 −0.9%（微幅墊高），為 rolling commit-first 的局部決策在背景低載日
+  多排 job 於峰前時刻造成，屬方法特性而非 bug。
+- 可協調日僅 5/18 天（28%），整窗 PAR 難以彰顯協調效益；論文宜以每日尖峰降幅與
+  協調效率為主，整窗 PAR 為補充。
+
+**輸出檔案**：`results/phase4d_final.json`、`results/day14_peak.png`
+
+
 ## Phase 5 — 實驗矩陣與指標
 
 | 軸 | 取值 |

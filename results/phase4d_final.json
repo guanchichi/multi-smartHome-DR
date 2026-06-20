@@ -1,0 +1,275 @@
+{
+  "note": "Phase 4d final \u2014 SCHED_REF bug fixed, day classification by Job%>=10%",
+  "n_houses": 17,
+  "n_days": 18,
+  "n_slots": 2592,
+  "window_par": {
+    "no_dr": 2.8533907005488293,
+    "greedy": 2.8699591405942617,
+    "coord": 2.8369619615162005
+  },
+  "day_classification": {
+    "threshold_job_pct": 10.0,
+    "coordable_days": [
+      3,
+      7,
+      11,
+      14,
+      16
+    ],
+    "bg_dominant_days": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      12,
+      13,
+      15,
+      17
+    ],
+    "per_day_job_pct": [
+      0.7348163801716582,
+      0.0,
+      8.105829728123396,
+      11.44850272634321,
+      0.0,
+      2.6504624418070533,
+      4.9956519943520385,
+      12.31435220192802,
+      5.8331014499151514,
+      4.64298973529606,
+      4.002762557617625,
+      18.859569309980408,
+      6.310738592579093,
+      1.3162107030221586,
+      17.024093435945936,
+      1.800430572377582,
+      11.967424400497775,
+      7.947919530642035
+    ]
+  },
+  "daily_peak_reduction": {
+    "all_18_days": {
+      "greedy_mean": 0.426983231059763,
+      "greedy_std": 1.1197365125097931,
+      "coord_mean": 4.921440042602594,
+      "coord_std": 4.3319408469599,
+      "n": 18
+    },
+    "coordable_days": {
+      "greedy_mean": 0.0,
+      "greedy_std": 0.0,
+      "coord_mean": 10.72295294484898,
+      "coord_std": 1.903365741022973,
+      "n": 5
+    }
+  },
+  "coord_efficiency": {
+    "all_18_days": {
+      "mean": 74.56424208610788,
+      "std": 41.217327201939504,
+      "n": 14
+    },
+    "coordable_days": {
+      "mean": 88.83619321957306,
+      "std": 12.03653691561632,
+      "n": 5
+    }
+  },
+  "job_metrics": {
+    "n_committed": 359,
+    "n_deadline_missed": 13,
+    "deadline_miss_rate": 0.036211699164345405,
+    "avg_delay_h": 2.466573816155989,
+    "std_delay_h": 1.7732747224123668,
+    "runtime_s_per_tick": 0.093,
+    "fallback_ticks": 0
+  },
+  "per_day": [
+    {
+      "day": 0,
+      "nodr_peak_W": 15766.792059696045,
+      "greedy_peak_W": 15766.792059696045,
+      "coord_peak_W": 15650.935089013794,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 0.7348163801716582,
+      "job_pct_at_peak": 0.7348163801716582,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 1,
+      "nodr_peak_W": 22656.662736848506,
+      "greedy_peak_W": 22656.662736848506,
+      "coord_peak_W": 22656.662736848506,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 0.0,
+      "job_pct_at_peak": 0.0,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 2,
+      "nodr_peak_W": 17065.910590919735,
+      "greedy_peak_W": 17065.910590919735,
+      "coord_peak_W": 15682.576936866004,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 8.105829728123396,
+      "job_pct_at_peak": 8.105829728123396,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 3,
+      "nodr_peak_W": 22920.18617064156,
+      "greedy_peak_W": 22920.18617064156,
+      "coord_peak_W": 20296.16803201272,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 11.44850272634321,
+      "job_pct_at_peak": 11.44850272634321,
+      "type": "coordable"
+    },
+    {
+      "day": 4,
+      "nodr_peak_W": 19759.050976888575,
+      "greedy_peak_W": 19759.050976888575,
+      "coord_peak_W": 19759.050976888575,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 0.0,
+      "job_pct_at_peak": 0.0,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 5,
+      "nodr_peak_W": 15308.769493033062,
+      "greedy_peak_W": 15308.769493033062,
+      "coord_peak_W": 14903.016307317404,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 2.6504624418070533,
+      "job_pct_at_peak": 2.6504624418070533,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 6,
+      "nodr_peak_W": 14944.561088353981,
+      "greedy_peak_W": 14944.561088353981,
+      "coord_peak_W": 14197.982824296467,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 4.9956519943520385,
+      "job_pct_at_peak": 4.9956519943520385,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 7,
+      "nodr_peak_W": 19508.12087056672,
+      "greedy_peak_W": 19508.12087056672,
+      "coord_peak_W": 17792.39192345802,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 8.794947286272663,
+      "job_pct_at_peak": 12.31435220192802,
+      "type": "coordable"
+    },
+    {
+      "day": 8,
+      "nodr_peak_W": 19216.96497522777,
+      "greedy_peak_W": 19216.96497522777,
+      "coord_peak_W": 18876.021166804607,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 1.7741813489417644,
+      "job_pct_at_peak": 5.8331014499151514,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 9,
+      "nodr_peak_W": 19494.85172801378,
+      "greedy_peak_W": 19494.85172801378,
+      "coord_peak_W": 19675.124302033488,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": -0.9247188772441935,
+      "job_pct_at_peak": 4.64298973529606,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 10,
+      "nodr_peak_W": 21628.36793864129,
+      "greedy_peak_W": 21628.36793864129,
+      "coord_peak_W": 20762.635724969583,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 4.002762557617625,
+      "job_pct_at_peak": 4.002762557617625,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 11,
+      "nodr_peak_W": 15796.980291458327,
+      "greedy_peak_W": 15796.980291458327,
+      "coord_peak_W": 14498.479364006593,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 8.219931300122301,
+      "job_pct_at_peak": 18.859569309980408,
+      "type": "coordable"
+    },
+    {
+      "day": 12,
+      "nodr_peak_W": 17766.18698561255,
+      "greedy_peak_W": 17766.18698561255,
+      "coord_peak_W": 16645.009367081733,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 6.310738592579093,
+      "job_pct_at_peak": 6.310738592579093,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 13,
+      "nodr_peak_W": 17079.006646272184,
+      "greedy_peak_W": 16854.210932824084,
+      "coord_peak_W": 16854.210932824084,
+      "red_greedy_pct": 1.3162107030221586,
+      "red_coord_pct": 1.3162107030221586,
+      "job_pct_at_peak": 1.3162107030221586,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 14,
+      "nodr_peak_W": 19681.474350411547,
+      "greedy_peak_W": 19681.474350411547,
+      "coord_peak_W": 17086.67683929105,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 13.183959011008946,
+      "job_pct_at_peak": 17.024093435945936,
+      "type": "coordable"
+    },
+    {
+      "day": 15,
+      "nodr_peak_W": 16708.681022646382,
+      "greedy_peak_W": 16407.852821273606,
+      "coord_peak_W": 16407.852821273606,
+      "red_greedy_pct": 1.800430572377582,
+      "red_coord_pct": 1.800430572377582,
+      "job_pct_at_peak": 1.800430572377582,
+      "type": "bg_dominant"
+    },
+    {
+      "day": 16,
+      "nodr_peak_W": 17840.853132090728,
+      "greedy_peak_W": 17840.853132090728,
+      "coord_peak_W": 15705.76252110393,
+      "red_greedy_pct": 0.0,
+      "red_coord_pct": 11.967424400497775,
+      "job_pct_at_peak": 11.967424400497775,
+      "type": "coordable"
+    },
+    {
+      "day": 17,
+      "nodr_peak_W": 20473.214255617597,
+      "greedy_peak_W": 19537.781450361566,
+      "coord_peak_W": 19612.358466904767,
+      "red_greedy_pct": 4.569056883675993,
+      "red_coord_pct": 4.20479060085361,
+      "job_pct_at_peak": 7.947919530642035,
+      "type": "bg_dominant"
+    }
+  ]
+}

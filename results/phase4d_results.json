@@ -1,0 +1,212 @@
+{
+  "metrics": {
+    "window_par": {
+      "no_dr": 2.8533907005488293,
+      "greedy": 2.898443929465436,
+      "coord": 2.898443929465436
+    },
+    "coord_par_improvement_pct": 0.0,
+    "daily_peak_reduction_pct": {
+      "greedy_mean": 1.292898650024281,
+      "greedy_std": 1.759357040750737,
+      "coord_mean": 4.291637463683465,
+      "coord_std": 4.096879345381764,
+      "oracle_mean": 6.095499940597637,
+      "oracle_std": 4.708892419584058,
+      "n_oracle_days": 18
+    },
+    "coord_efficiency_daily_pct": {
+      "mean": 63.45772230783358,
+      "std": 42.97476848301495
+    },
+    "avg_delay_h": 1.793125810635538,
+    "std_delay_h": 1.8859345465506936,
+    "deadline_miss_rate": 0.31906614785992216,
+    "n_coord_committed": 257,
+    "n_deadline_missed": 82,
+    "avg_coord_iters": 50.0,
+    "fallback_ticks": 0
+  },
+  "oracle_days": [
+    {
+      "day": 0,
+      "status": "Optimal",
+      "oracle_peak": 15650.935,
+      "n_milp_jobs": 8,
+      "greedy_peak": 15766.792059696045,
+      "solve_time_s": 0.23,
+      "win_s": 39,
+      "win_e": 75
+    },
+    {
+      "day": 1,
+      "status": "Optimal",
+      "oracle_peak": 22656.663,
+      "n_milp_jobs": 6,
+      "greedy_peak": 22656.662736848506,
+      "solve_time_s": 0.07,
+      "win_s": 248,
+      "win_e": 284
+    },
+    {
+      "day": 2,
+      "status": "Optimal",
+      "oracle_peak": 15682.577,
+      "n_milp_jobs": 3,
+      "greedy_peak": 16602.791441550587,
+      "solve_time_s": 0.04,
+      "win_s": 313,
+      "win_e": 349
+    },
+    {
+      "day": 3,
+      "status": "Optimal",
+      "oracle_peak": 20296.168,
+      "n_milp_jobs": 18,
+      "greedy_peak": 22134.667586034502,
+      "solve_time_s": 0.08,
+      "win_s": 520,
+      "win_e": 556
+    },
+    {
+      "day": 4,
+      "status": "Optimal",
+      "oracle_peak": 19759.051,
+      "n_milp_jobs": 10,
+      "greedy_peak": 19759.050976888575,
+      "solve_time_s": 0.07,
+      "win_s": 685,
+      "win_e": 720
+    },
+    {
+      "day": 5,
+      "status": "Optimal",
+      "oracle_peak": 14903.016,
+      "n_milp_jobs": 5,
+      "greedy_peak": 15308.769493033062,
+      "solve_time_s": 0.04,
+      "win_s": 742,
+      "win_e": 778
+    },
+    {
+      "day": 6,
+      "status": "Optimal",
+      "oracle_peak": 14197.983,
+      "n_milp_jobs": 5,
+      "greedy_peak": 14944.561088353981,
+      "solve_time_s": 0.04,
+      "win_s": 897,
+      "win_e": 933
+    },
+    {
+      "day": 7,
+      "status": "Optimal",
+      "oracle_peak": 17105.822,
+      "n_milp_jobs": 6,
+      "greedy_peak": 18307.995312108775,
+      "solve_time_s": 0.04,
+      "win_s": 1040,
+      "win_e": 1076
+    },
+    {
+      "day": 8,
+      "status": "Optimal",
+      "oracle_peak": 18096.02,
+      "n_milp_jobs": 10,
+      "greedy_peak": 18436.963721051234,
+      "solve_time_s": 0.06,
+      "win_s": 1189,
+      "win_e": 1225
+    },
+    {
+      "day": 9,
+      "status": "Optimal",
+      "oracle_peak": 18589.708,
+      "n_milp_jobs": 6,
+      "greedy_peak": 19494.85172801378,
+      "solve_time_s": 0.05,
+      "win_s": 1327,
+      "win_e": 1363
+    },
+    {
+      "day": 10,
+      "status": "Optimal",
+      "oracle_peak": 20762.636,
+      "n_milp_jobs": 7,
+      "greedy_peak": 21279.21227665047,
+      "solve_time_s": 0.05,
+      "win_s": 1473,
+      "win_e": 1509
+    },
+    {
+      "day": 11,
+      "status": "Optimal",
+      "oracle_peak": 14434.693,
+      "n_milp_jobs": 8,
+      "greedy_peak": 15796.980291458327,
+      "solve_time_s": 0.05,
+      "win_s": 1620,
+      "win_e": 1656
+    },
+    {
+      "day": 12,
+      "status": "Optimal",
+      "oracle_peak": 16645.009,
+      "n_milp_jobs": 6,
+      "greedy_peak": 17766.18698561255,
+      "solve_time_s": 0.04,
+      "win_s": 1760,
+      "win_e": 1796
+    },
+    {
+      "day": 13,
+      "status": "Optimal",
+      "oracle_peak": 16854.211,
+      "n_milp_jobs": 7,
+      "greedy_peak": 16854.210932824084,
+      "solve_time_s": 0.06,
+      "win_s": 1967,
+      "win_e": 2003
+    },
+    {
+      "day": 14,
+      "status": "Optimal",
+      "oracle_peak": 16330.882,
+      "n_milp_jobs": 8,
+      "greedy_peak": 19250.55930567622,
+      "solve_time_s": 0.04,
+      "win_s": 2055,
+      "win_e": 2091
+    },
+    {
+      "day": 15,
+      "status": "Optimal",
+      "oracle_peak": 16407.853,
+      "n_milp_jobs": 17,
+      "greedy_peak": 16407.852821273606,
+      "solve_time_s": 0.07,
+      "win_s": 2246,
+      "win_e": 2282
+    },
+    {
+      "day": 16,
+      "status": "Optimal",
+      "oracle_peak": 15705.763,
+      "n_milp_jobs": 7,
+      "greedy_peak": 17840.853132090728,
+      "solve_time_s": 0.05,
+      "win_s": 2335,
+      "win_e": 2371
+    },
+    {
+      "day": 17,
+      "status": "Optimal",
+      "oracle_peak": 18846.02,
+      "n_milp_jobs": 7,
+      "greedy_peak": 20473.214255617597,
+      "solve_time_s": 0.04,
+      "win_s": 2481,
+      "win_e": 2517
+    }
+  ]
+}
